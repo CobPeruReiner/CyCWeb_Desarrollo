@@ -20,7 +20,7 @@ services:
     depends_on:
       - frontend
     ports:
-      - "5002:5002"
+      - "4005:4005"
 
 volumes:
   frontend-build:
