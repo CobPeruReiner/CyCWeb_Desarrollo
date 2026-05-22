@@ -1,33 +1,26 @@
 services:
+  frontend:
+    image: cobperureiner/cycweb-frontend:latest
+    build:
+      context: ./frontend
+    env_file:
+      - ./frontend/.env.production
+    volumes:
+      - frontend-build:/app/build
 
   backend:
-    image: cobperureiner2/cycweb-backend:${VERSION}
+    image: cobperureiner/cycweb-backend:latest
     build:
-      context: .
-      dockerfile: backend/Dockerfile
-
-    secrets:
-      - cycweb_env_enc_key
-      
-    environment:
-      ENV_ENC_KEY_FILE: /run/secrets/cycweb_env_enc_key
-
+      context: ./backend
+    env_file:
+      - ./backend/.env.production
     volumes:
-      - /var/log/cycweb_backend_logs:/app/logs
+      - frontend-build:/app/build
       - ./backend/assets:/app/backend/assets
-      - ./backend/Adjuntos:/app/backend/Adjuntos
-
+    depends_on:
+      - frontend
     ports:
-      - target: 5002
-        published: 5002
-        protocol: tcp
-        mode: ingress
+      - "5002:5002"
 
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: any
-
-secrets:
-  cycweb_env_enc_key:
-    external: true
+volumes:
+  frontend-build:
