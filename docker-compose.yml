@@ -1,0 +1,33 @@
+services:
+
+  backend:
+    image: cobperureiner2/cycweb-backend:${VERSION}
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+
+    secrets:
+      - cycweb_env_enc_key
+      
+    environment:
+      ENV_ENC_KEY_FILE: /run/secrets/cycweb_env_enc_key
+
+    volumes:
+      - /var/log/cycweb_backend_logs:/app/logs
+      - ./backend/assets:/app/backend/assets
+      - ./backend/Adjuntos:/app/backend/Adjuntos
+
+    ports:
+      - target: 5002
+        published: 5002
+        protocol: tcp
+        mode: ingress
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+
+secrets:
+  cycweb_env_enc_key:
+    external: true
